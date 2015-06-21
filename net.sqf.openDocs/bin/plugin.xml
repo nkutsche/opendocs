@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin SYSTEM "../plugin.dtd">
+<plugin
+    id="net.sqf.openDocs"
+    name="OpenDocs for oXygen"
+    description="Implementation of OpenDocs"
+    version="1.0.0"
+    vendor="schematron-quickfix.com"
+    class="net.sqf.openDocs.OpenDocsPlugin"
+    classLoaderType="preferReferencedResources">
+    <runtime>
+        <library name="../bin/"/>
+<!--		<library name="../../net.sqf.xmlUtils/lib/xercesImpl.jar"/>-->
+    </runtime>
+    <extension type="WorkspaceAccess" class="net.sqf.openDocs.OpenDocsExtension"/>
+    <!--The sample toolbar which will present messages from the sample plugin.-->
+    <view id="OpenDocs" initialSide="EAST" initialRow="1"/>
+</plugin>
