@@ -8,23 +8,16 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.Locale;
 
-import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -36,11 +29,8 @@ import javax.swing.border.Border;
 
 import net.sqf.view.utils.images.IconMap;
 import net.sqf.view.utils.types.IntegerAreaVerifier;
-import net.sqf.view.utils.types.IntegerVerifier;
-import net.sqf.view.utils.types.VerifierFactory;
 
 import org.joda.time.DateTime;
-import org.joda.time.TimeOfDay;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -53,6 +43,7 @@ public class TimePanel extends JPanel implements MouseListener {
 
 	private final Font defFont;
 
+	@SuppressWarnings("unused")
 	private final int padding;
 	private final GridBagLayout gbl = new GridBagLayout();
 
@@ -245,7 +236,7 @@ public class TimePanel extends JPanel implements MouseListener {
 		iavSec.setVerifier(sec, dialog, false);
 
 		setTime(actuell);
-		int tinySize = 25;
+//		int tinySize = 25;
 //		JButton hourP = new PanelButton(icons.getIcon(6, 13));
 //		hourP.addActionListener(new ActionListener() {
 //			@Override
@@ -455,7 +446,7 @@ public class TimePanel extends JPanel implements MouseListener {
 //			this.label.setOpaque(true);
 
 			this.setFont(defFont);
-			Insets insets = new Insets(padding, padding, padding, padding);
+//			Insets insets = new Insets(padding, padding, padding, padding);
 //			SwingUtil.addComponent(this, gbl, label, 0, 0, 1, 1, 1.0, 1.0,
 //					GridBagConstraints.CENTER, GridBagConstraints.NONE, insets);
 			addMouseListener(new MouseListener() {

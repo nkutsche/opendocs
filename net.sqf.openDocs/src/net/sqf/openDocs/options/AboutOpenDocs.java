@@ -18,8 +18,6 @@ import javax.swing.JFrame;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
-import de.janosch.commons.swing.util.SwingUtil;
-
 import net.sqf.openDocs.OpenDocsExtension;
 import net.sqf.openDocs.OpenDocsPlugin;
 import net.sqf.view.utils.images.IconMap;
@@ -75,7 +73,7 @@ public class AboutOpenDocs extends JDialog {
 	
 	public AboutOpenDocs(JFrame parent, File baseDir) {
 		super(parent);
-		this.setTitle("About DocViewer");
+		this.setTitle("About OpenDocs (version " + OpenDocsPlugin.getInstance().getDescriptor().getVersion()+ ")");
 		this.setIconImage(OpenDocsExtension.ICONS.getIcon(13, 20).getImage());
 
 

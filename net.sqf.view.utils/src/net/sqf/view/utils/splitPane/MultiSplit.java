@@ -92,6 +92,7 @@ public class MultiSplit extends JSplitPane {
 	
 	private boolean isFirstCollapsed = false;
 	private boolean isSecondeCollapsed = false;
+	@SuppressWarnings("unused")
 	private double lastDividerLocation = 0.0;
 	
 	protected void expand() {

@@ -4,7 +4,6 @@ import java.awt.Container;
 
 import javax.swing.JFormattedTextField;
 
-import net.sqf.view.utils.types.panels.CalendarTimePanel2;
 import net.sqf.view.utils.types.panels.TimePanel;
 
 public class TimeVerifier implements _Verifier {

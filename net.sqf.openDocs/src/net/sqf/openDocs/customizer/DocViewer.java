@@ -3,27 +3,22 @@ package net.sqf.openDocs.customizer;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 import net.sqf.openDocs.OpenDocsExtension;
 import net.sqf.openDocs.buttons.EditorMenu;
 import net.sqf.openDocs.listNodes.EditorNode;
-import net.sqf.openDocs.options.AboutOpenDocs;
+import net.sqf.openDocs.listNodes.NodeFactory;
 import net.sqf.openDocs.options.AboutOpenDocsMenuItem;
 import net.sqf.openDocs.options.Config;
 import ro.sync.exml.workspace.api.editor.WSEditor;
@@ -84,10 +79,11 @@ public class DocViewer extends WSEditorChangeListener implements
 		super.editorPageChanged(path);
 	}
 	
+//	 && path.getProtocol().equals("file")
 	@Override
 	public void editorOpened(URL path) {
 		super.editorOpened(path);
-		if (path != null && path.getProtocol().equals("file")) {
+		if (path != null) {
 			if(this.editorByUrl.containsKey(path)){
 				this.closedEditor.remove(this.editorByUrl.get(path));
 			}
@@ -102,7 +98,7 @@ public class DocViewer extends WSEditorChangeListener implements
 	@Override
 	public void editorSelected(URL path) {
 		super.editorSelected(path);
-		if (path != null && path.getProtocol().equals("file")) {
+		if (path != null) {
 			if(this.editorByUrl.containsKey(path)){
 				this.closedEditor.remove(this.editorByUrl.get(path));
 			}
@@ -116,7 +112,7 @@ public class DocViewer extends WSEditorChangeListener implements
 	public void editorClosed(URL path) {
 		// TODO Auto-generated method stub
 		super.editorClosed(path);
-		if (path != null && path.getProtocol().equals("file")) {
+		if (path != null) {
 			editors.remove(path);
 			openOrderMap.remove(path);
 			if(editorByUrl.containsKey(path)){
@@ -137,15 +133,18 @@ public class DocViewer extends WSEditorChangeListener implements
 		for (URL url : editors) {
 			if (url != null) {
 				WSEditor editor = spw.getEditorAccess(url, StandalonePluginWorkspace.MAIN_EDITING_AREA);
+				boolean isBold =  editor == spw.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
 				if (editor != null) {
 					int openCounter = openOrderMap.containsKey(url) ? this.openOrderMap
 							.get(url) : DocViewer.openCounter;
-					EditorNode en = new EditorNode(editor, openCounter, i++);
-					EditorItem ei = new EditorItem(en, editors.size() < i + 1);
-					ei.implementPopupMenu(new EditorMenu[]{
-							new EditorMenu(spw, ei, ePanel),
-							new EditorMenu(spw, ei, ePanel, EditorItem.SHIFT_DOWN),
-							new EditorMenu(spw, ei, ePanel, EditorItem.CTRL_DOWN)});
+					EditorNode en = NodeFactory.createEditorNode(editor, openCounter, i++);
+//					EditorItem ei = EditorItem.createEditorItem(en, ePanel, spw, editors.size() < i + 1);
+					EditorItem ei = EditorItem.createEditorItem(en, ePanel, spw, isBold);
+//					EditorItem ei = new EditorItem(en, editors.size() < i + 1);
+//					ei.implementPopupMenu(new EditorMenu[]{
+//							new EditorMenu(spw, ei, ePanel),
+//							new EditorMenu(spw, ei, ePanel, EditorItem.SHIFT_DOWN),
+//							new EditorMenu(spw, ei, ePanel, EditorItem.CTRL_DOWN)});
 					items.add(ei);
 				}
 			}
@@ -154,7 +153,7 @@ public class DocViewer extends WSEditorChangeListener implements
 		int j = 0;
 		for (WSEditor editor : this.closedEditor) {
 			if (editor != null) {
-				EditorNode en = new EditorNode(editor, j++, j++);
+				EditorNode en = NodeFactory.createEditorNode(editor, j++, j++);
 				EditorItem ei = new EditorItem(en);
 				ei.implementPopupMenu(new EditorMenu(spw, ei, ePanel));
 				closedItems.add(ei);
@@ -183,7 +182,8 @@ public class DocViewer extends WSEditorChangeListener implements
 	
 	public void saveOptions(){
 		if(ePanel != null){
-			Config.saveConfig(ePanel.getConfig());
+			Config.saveConfig(this.spw, ePanel.getConfig());
+			Config.saveConfig(this.spw, Config.STORAGE_OPTION_KEY_WORKING_SETS, ePanel.getWorkingSetConfig());
 		}
 	}
 

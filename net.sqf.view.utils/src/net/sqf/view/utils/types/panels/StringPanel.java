@@ -34,7 +34,6 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
 import net.sqf.view.utils.images.IconMap;
-import net.sqf.view.utils.types.VerifierFactory;
 import net.sqf.view.utils.types._Verifier;
 import de.janosch.commons.swing.util.SwingUtil;
 
@@ -63,10 +62,12 @@ public class StringPanel extends JPanel implements MouseListener, FocusListener 
 	
 	private final JPanel buttonPanel = new JPanel();
 	private final JButton okBtn;
+	@SuppressWarnings("unused")
 	private final JButton cancelBtn;
 	private final JButton clearBtn; 
 	
 	private class PanelButton extends JButton{
+		private static final long serialVersionUID = 1699184718806511284L;
 		public PanelButton(Icon i){
 			this.setIcon(i);
 			Dimension dim = new Dimension(i.getIconWidth() + 1, i.getIconHeight() + 1);
@@ -102,8 +103,8 @@ public class StringPanel extends JPanel implements MouseListener, FocusListener 
 		buttonPanel.setLayout(buttonGbl);
 		buttonPanel.setVisible(false);
 		
-		if(VerifierFactory.ICONS != null){
-			IconMap icons = VerifierFactory.ICONS;
+		if(IconMap.ICONS != null){
+			IconMap icons = IconMap.ICONS;
 			this.okBtn = new PanelButton(icons.getIcon(2, 10));
 			this.clearBtn = new PanelButton(icons.getIcon(10, 11));
 			this.cancelBtn = new PanelButton(icons.getIcon(0, 10));
@@ -223,16 +224,16 @@ public class StringPanel extends JPanel implements MouseListener, FocusListener 
 //		setText();
 	}
 	
-	private void switchToButtons(){
-		this.buttonPanel.setVisible(true);
-//		this.entryField.setVisible(false);
-		dialog.setSize(dialog.getWidth(), dialog.getHeight() * 2);
-	}
-	private void switchToField(){
-		this.buttonPanel.setVisible(false);
-		dialog.setSize(dialog.getWidth(), dialog.getHeight() / 2);
-//		this.entryField.setVisible(true);
-	}
+//	private void switchToButtons(){
+//		this.buttonPanel.setVisible(true);
+////		this.entryField.setVisible(false);
+//		dialog.setSize(dialog.getWidth(), dialog.getHeight() * 2);
+//	}
+//	private void switchToField(){
+//		this.buttonPanel.setVisible(false);
+//		dialog.setSize(dialog.getWidth(), dialog.getHeight() / 2);
+////		this.entryField.setVisible(true);
+//	}
 	
 	protected void unsetTextAndDispose() {
 		if(initialValue != null){

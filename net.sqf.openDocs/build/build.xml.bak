@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project net.sqf.oxygen">
+	<!--this file was created by Eclipse Runnable JAR Export Wizard-->
+	<!--ANT 1.7 is required                                        -->
+	<target name="create_run_jar">
+		<jar destfile="../oxygen-debuger/plugins/openDocs/lib/openDocs.jar" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
+				<attribute name="Rsrc-Main-Class" value="net.sqf.oxygen.Run" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="./bin" />
+			<fileset dir="../de.janosch.commons/bin" />
+			<fileset dir="../net.sqf.view.utils/bin" />
+			<fileset dir="../net.sqf.utils.process/bin" />
+			<fileset dir="../net.sqf.stringUtils/bin" />
+			<fileset dir="../net.sqf.xmlUtils/bin" />
+		</jar>
+		<copy todir="../oxygen-debuger/plugins/openDocs/lib/">
+			<fileset dir="../net.sqf.stringUtils/lib" includes="**" />
+		</copy>
+		<copy todir="../oxygen-debuger/plugins/openDocs/icons/">
+			<fileset dir="bindata/icons" includes="**" />
+		</copy>
+		<copy todir="../oxygen-debuger/plugins/openDocs/conf/">
+			<fileset dir="xml/conf" includes="**" />
+		</copy>
+	    <copy file="../net.sqf.xmlUtils/lib/woodstox-core-lgpl-4.2.0.jar" tofile="../oxygen-debuger/plugins/openDocs/lib/woodstox-core-lgpl-4.2.0.jar"/>
+		<copy file="../net.sqf.xmlUtils/lib/stax2-api-3.1.1.jar" tofile="../oxygen-debuger/plugins/openDocs/lib/stax2-api-3.1.1.jar"/>
+		<copy file="EULA-OpenDocs-oXygen-plugin.txt" tofile="../oxygen-debuger/plugins/openDocs/EULA-OpenDocs-oXygen-plugin.txt"/>
+		<!--<copy todir="../oxygen-debuger/plugins/escali/lib/xml/schema/">
+            <fileset dir="../net.sqf.xsm/xml/schema/" includes="**"></fileset>
+        </copy>-->
+
+	</target>
+</project>

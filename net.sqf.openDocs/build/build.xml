@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project net.sqf.oxygen" basedir="..">
+	<!--this file was created by Eclipse Runnable JAR Export Wizard-->
+	<!--ANT 1.7 is required                                        -->
+    <property name="version" value="0.8"></property>
+    <target name="deploy">
+        <jar destfile="${dir}/lib/openDocs.jar" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
+				<attribute name="Rsrc-Main-Class" value="net.sqf.oxygen.Run" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="./bin" />
+            <fileset dir="../com.nkutsche.common/bin" />
+			<fileset dir="../net.sqf.view.utils/bin" />
+			<fileset dir="../net.sqf.utils.process/bin" />
+			<fileset dir="../net.sqf.stringUtils/bin" />
+			<fileset dir="../net.sqf.xmlUtils/bin" />
+		</jar>
+        <copy todir="${dir}/lib/">
+            <fileset dir="../net.sqf.stringUtils/lib" includes="**" />
+        </copy>
+        <copy todir="${dir}/icons/">
+            <fileset dir="bindata/icons" includes="**" />
+        </copy>
+        <copy todir="${dir}/conf/">
+            <fileset dir="xml/conf" includes="**" />
+        </copy>
+        <copy file="../net.sqf.xmlUtils/lib/woodstox-core-lgpl-4.2.0.jar" tofile="${dir}/lib/woodstox-core-lgpl-4.2.0.jar"/>
+        <copy file="../net.sqf.xmlUtils/lib/stax2-api-3.1.1.jar" tofile="${dir}/lib/stax2-api-3.1.1.jar"/>
+        <copy file="EULA-OpenDocs-oXygen-plugin.txt" tofile="${dir}/EULA-OpenDocs-oXygen-plugin.txt"/>
+    </target>
+	<target name="create_run_jar">
+	    <tstamp>
+	        <format property="timestamp" pattern="yyyyMMdd" />
+	    </tstamp>
+		<antcall target="deploy">
+		    <param name="dir" value="../oxygen-debuger/plugins/openDocs"/>
+		</antcall>
+	    <!--	     ${version} ../oxygen-debuger/plugins/openDocs${version}/plugin.xml-->
+	    <exec executable="cmd">
+	        <arg value="/c"/>
+	        <arg value="build\pluginXml.bat"/>
+	        <arg value="${version}"/>
+	        <arg value="../../oxygen-debuger/plugins/openDocs/plugin.xml"/>
+	    </exec>
+	    <zip destfile="releases/${version}/openDocs${version}build${timestamp}.zip">
+		    <fileset dir="../oxygen-debuger/plugins/">
+		        <include name="openDocs/**"/>
+		    </fileset>
+		</zip>
+	</target>
+</project>

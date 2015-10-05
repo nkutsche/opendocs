@@ -1,5 +1,6 @@
 package net.sqf.openDocs.customizer;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
@@ -19,20 +20,28 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import net.sqf.openDocs.OpenDocsExtension;
 import net.sqf.openDocs.buttons.CloseButton;
 import net.sqf.openDocs.buttons.GroupByButton;
 import net.sqf.openDocs.buttons.OptionButton;
 import net.sqf.openDocs.buttons.SelectButton;
 import net.sqf.openDocs.buttons.SortByButton;
+import net.sqf.openDocs.buttons.WorkingSetButton;
 import net.sqf.openDocs.listNodes.EditorNode;
 import net.sqf.openDocs.listNodes.GroupNode;
 import net.sqf.openDocs.options.Config;
+import net.sqf.openDocs.workingSet.WorkingSet;
+import net.sqf.openDocs.workingSet.WorkingSetArea;
 import net.sqf.view.utils.lists.AbstractList;
 import net.sqf.view.utils.lists.items.AbstractItemMouseListener;
 import net.sqf.view.utils.swing.FileDragSource;
 import net.sqf.view.utils.swing.FileDropTarget;
+
+import org.apache.batik.ext.swing.GridBagConstants;
+
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import de.janosch.commons.collections.MultiValueHashMap;
@@ -45,6 +54,7 @@ public class EditorPanel extends AbstractList<EditorNode, EditorItem>{
 	public static final String GROUPING_EXT = "EXT";
 	public static final String GROUPING_FOLDER = "FOLDER";
 	public static final String GROUPING_FOLDER_TREE = "FOLDER_TREE";
+	public static final String GROUPING_WORKING_SET = "WORKING_SET";
 //	public static final String GROUPING_SAVE = "SAVE";
 	
 	public static final String SORTING_ALPH = "ALPH";
@@ -64,11 +74,12 @@ public class EditorPanel extends AbstractList<EditorNode, EditorItem>{
 //	private String sortBy = SORTING_ALPH;
 //	private int showClosedFiles = 0;
 	
-	private Config conf = Config.readConfig();
+	private Config conf;
 //	private String aboutHtm = Config.readAbout();
 	
 //	private boolean revert = false;
-	private ArrayList<EditorItem> closedItems;
+	private ArrayList<EditorItem> closedItems = new ArrayList<EditorItem>();
+	private WorkingSetArea workingSets = new WorkingSetArea(this, null);
 	
 	
 	private class EditorItemListener extends AbstractItemMouseListener<EditorNode, EditorItem> {
@@ -88,11 +99,14 @@ public class EditorPanel extends AbstractList<EditorNode, EditorItem>{
 	
 	private final static int UNDEFINED = -1;
 	private final static int YES = 0;
-	private final static int NO = 1;
+//	private final static int NO = 1;
 	
 	public EditorPanel(final StandalonePluginWorkspace spw) {
 		this.spw = spw;
+		this.conf = Config.readConfig(spw);
 		
+		
+		workingSets = new WorkingSetArea(this, Config.readWorkingSetOptions(spw));
 		new FileDropTarget(this.endPanel) {
 			
 			@Override
@@ -134,10 +148,17 @@ public class EditorPanel extends AbstractList<EditorNode, EditorItem>{
 		this.addComponentToToolbar(new GroupByButton(this), 	1, 0, 1, 1, 0.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE);
 		this.addComponentToToolbar(new SortByButton(this), 		2, 0, 1, 1, 0.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE);
 		this.addComponentToToolbar(new SelectButton(this), 		3, 0, 1, 1, 0.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE);
-		this.addComponentToToolbar(new JPanel(), 				4, 0, 1, 1, 1.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH);
-		this.addComponentToToolbar(new OptionButton(this, frame), 		5, 0, 1, 1, 0.0, 1.0, GridBagConstraints.NORTHEAST, GridBagConstraints.NONE);
+		this.addComponentToToolbar(new WorkingSetButton(this), 	4, 0, 1, 1, 0.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE);
+		this.addComponentToToolbar(new JPanel(), 				5, 0, 1, 1, 1.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH);
+		this.addComponentToToolbar(new OptionButton(this, frame), 		6, 0, 1, 1, 0.0, 1.0, GridBagConstraints.NORTHEAST, GridBagConstraints.NONE);
+		
+		
+		this.addComponentToBottombar(workingSets, 0, 0, 1, 1, 1.0, 1.0, GridBagConstants.NORTHWEST, GridBagConstants.BOTH);
+//		this.addComponentToBottombar(new JPanel(), 1, 0, 1, 1, 1.0, 1.0, GridBagConstants.NORTHWEST, GridBagConstants.HORIZONTAL);
 		
 		this.setMinimumSize(new Dimension(250, getMinimumSize().height));
+		
+		
 		
 		this.setFocusable(true);
 		this.requestFocus();
@@ -176,10 +197,13 @@ public class EditorPanel extends AbstractList<EditorNode, EditorItem>{
 
 		@Override
 		public int compare(Object o1, Object o2) {
-			
 			if(o1 == lastClosedItems)
 				return 1;
 			if(o2 == lastClosedItems)
+				return -1;
+			if(o1 == noWorkingSetItem)
+				return 1;
+			if(o2 == noWorkingSetItem)
 				return -1;
 			
 			if(!conf.getSortBy().equals(SORTING_ALPH)){
@@ -205,7 +229,7 @@ public class EditorPanel extends AbstractList<EditorNode, EditorItem>{
 	}
 	
 	public EditorItem getListItemByURL(URL url){
-		for (EditorItem item : this.itemList) {
+		for (EditorItem item : this.getListItems()) {
 			if(item.getEditorNode().getUrl().equals(url)){
 				return item;
 			}
@@ -219,11 +243,8 @@ public class EditorPanel extends AbstractList<EditorNode, EditorItem>{
 		updateListItems(items);
 	}
 	
-	public final static Object lastClosedItems = new Object(){
-		public String toString() {
-			return "Last closed items";
-		};
-	};
+	private final static JLabel lastClosedItems = new JLabel("Last closed items", OpenDocsExtension.ICONS.getIcon(0, 10), 0);
+	public final static JLabel noWorkingSetItem = new JLabel("No working set");
 	
 	private class DragListener extends FileDragSource {
 
@@ -251,6 +272,7 @@ public class EditorPanel extends AbstractList<EditorNode, EditorItem>{
 			return filesArr.toArray(new File[filesArr.size()]);
 		}
 		
+		
 	}
 	
 	
@@ -275,72 +297,105 @@ public class EditorPanel extends AbstractList<EditorNode, EditorItem>{
 		
 	}
 	
-	
+	public static class Extension {
+		
+		private final String ext;
+
+		protected Extension(String ext){
+			this.ext = ext;
+		}
+		@Override
+		public String toString() {
+			return ext;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			return this.toString().equals(obj.toString());
+		}
+		@Override
+		public int hashCode() {
+			return this.toString().hashCode();
+		}
+	}
 	
 	private void updateListItems(ArrayList<EditorItem> items){
-		items.removeAll(closedItems);
-		this.removeAllItems();
-		MultiValueHashMap<Object, EditorItem> groupMap = new MultiValueHashMap<Object, EditorItem>(true);
-		List<EditorItem> itemList = items;
-		Collections.sort(itemList, new EditorItemComparator());
-		
-		
-		if(conf.getGroupBy().equals(GROUPING_FOLDER_TREE)){
-			updateListItemsAsTree(items);
-			this.updateUI();
-			return;
-		}
-		
-		for (EditorItem item : itemList) {
-			new DragListener(item);
-			Object key = "All files";
-			if(conf.getGroupBy().equals(GROUPING_EXT)) {
-				key = item.getEditorNode().getExtension();
-				groupMap.put(key, item);
-			} else if (conf.getGroupBy().equals(GROUPING_FOLDER)) {
-				try {
-					key = item.getEditorNode().getFile().getParentFile();
-					groupMap.put(key, item);
-				} catch (URISyntaxException e) {
-					groupMap.put("", item);
-				}
-			} else {
-				groupMap.put(key, item);
+		if(conf != null){
+			items.removeAll(closedItems);
+			this.removeAllItems();
+			MultiValueHashMap<Object, EditorItem> groupMap = new MultiValueHashMap<Object, EditorItem>(true);
+			List<EditorItem> itemList = items;
+			Collections.sort(itemList, new EditorItemComparator());
+			
+			
+			if(conf.getGroupBy().equals(GROUPING_FOLDER_TREE)){
+				updateListItemsAsTree(items);
+				this.updateUI();
+				return;
 			}
+			
+			for (EditorItem item : itemList) {
+				register(item);
+				Object key = "All files";
+				
+				if(conf.getGroupBy().equals(GROUPING_EXT)) {
+					key = new Extension(item.getEditorNode().getExtension());
+					groupMap.put(key, item);
+				} else if (conf.getGroupBy().equals(GROUPING_FOLDER)) {
+					try {
+						key = item.getEditorNode().getFile().getParentFile();
+						groupMap.put(key, item);
+					} catch (URISyntaxException e) {
+						groupMap.put("", item);
+					}
+				} else if(conf.getGroupBy().equals(GROUPING_WORKING_SET)) {
+					ArrayList<WorkingSet> sets = this.workingSets.getWorkingSet(item.getEditorNode().getUrl());
+					if(sets.size() > 0){
+						int i = 0;
+						for (WorkingSet ws : sets) {
+							groupMap.put(ws, i++ > 0 ? item.copy(this, spw, Color.BLUE) : item);
+						}
+					} else {
+						groupMap.put(noWorkingSetItem, item);
+					}
+					
+				} else {
+					groupMap.put(key, item);
+				}
+			}
+			for (int i = closedItems.size() - 1; i >= closedItems.size() - this.conf.getShowClosedFiles() && i >= 0; i--) {
+				closedItems.get(i).setClosed(true);
+				groupMap.put(lastClosedItems, closedItems.get(i));
+			}
+			
+			removeAllItems();
+			List<Object> keys = new ArrayList<Object>(groupMap.keySet());
+			
+			Collections.sort(keys, new GroupComparator(groupMap));
+			
+			for (Object key : keys) {
+				ArrayList<EditorItem> group = groupMap.getAll(key);
+				GroupNode groupNode = new GroupNode(key);
+				EditorGroupItem groupItem = new EditorGroupItem(groupNode, group, 0, this);
+				this.addListItem(groupItem);
+			}
+			this.updateUI();
 		}
-		for (int i = closedItems.size() - 1; i >= closedItems.size() - this.conf.getShowClosedFiles() && i >= 0; i--) {
-			closedItems.get(i).setClosed(true);
-			groupMap.put(lastClosedItems, closedItems.get(i));
-		}
-
-		removeAllItems();
-		List<Object> keys = new ArrayList<Object>(groupMap.keySet());
-		
-		Collections.sort(keys, new GroupComparator(groupMap));
-		
-		for (Object key : keys) {
-			ArrayList<EditorItem> group = groupMap.getAll(key);
-			GroupNode groupNode = new GroupNode(key);
-			EditorGroupItem groupItem = new EditorGroupItem(groupNode, group, 0, this);
-			this.addListItem(groupItem);
-		}
-		this.updateUI();
 	}
 	
-	private ArrayList<EditorGroupItem> parseFileHierarchy(MultiValueHashMap<Object, EditorItem> groupMap){
-		ArrayList<EditorGroupItem> groups = new ArrayList<EditorGroupItem>();
-		MultiValueHashMap<Object, EditorItem> parentGroupMap = new MultiValueHashMap<Object, EditorItem>(true);
-		
-		for (Object key : groupMap.keySet()) {
-			if(key instanceof File){
-				File fileKey = (File) key;
-				
-			} else {
-				
-			}
-		}
-		return groups;
-	}
+//	private ArrayList<EditorGroupItem> parseFileHierarchy(MultiValueHashMap<Object, EditorItem> groupMap){
+//		ArrayList<EditorGroupItem> groups = new ArrayList<EditorGroupItem>();
+//		MultiValueHashMap<Object, EditorItem> parentGroupMap = new MultiValueHashMap<Object, EditorItem>(true);
+//		
+//		for (Object key : groupMap.keySet()) {
+//			if(key instanceof File){
+//				File fileKey = (File) key;
+//				
+//			} else {
+//				
+//			}
+//		}
+//		return groups;
+//	}
 	
 	@Override
 	public void addListItem(EditorItem item) {
@@ -361,6 +416,9 @@ public class EditorPanel extends AbstractList<EditorNode, EditorItem>{
 				for (EditorItem item : EditorPanel.this.getSelectedItem()) {
 					if(!item.isClosed()){
 						WSEditor wse = EditorPanel.this.spw.getEditorAccess(item.getEditorNode().getUrl(), StandalonePluginWorkspace.MAIN_EDITING_AREA);
+						if(wse == null){
+							continue;
+						}
 						switch (askForSave) {
 						case CLOSE_WITH_SAVE:
 							wse.save();
@@ -380,16 +438,30 @@ public class EditorPanel extends AbstractList<EditorNode, EditorItem>{
 		};
 	}
 	
+	@Override
+	protected ArrayList<EditorItem> getListItems() {
+		HashMap<URL, EditorItem> map = new HashMap<URL, EditorItem>();
+		for (EditorItem item : super.getListItems()) {
+			map.put(item.getEditorNode().getUrl(), item);
+		}
+		ArrayList<EditorItem> uniqueItems = new ArrayList<EditorItem>(map.values());
+		return uniqueItems;
+	}
+	
+	public void refresh(){
+		updateListItems(this.getListItems());
+		this.repaint();
+	}
+	
 	public void setGroupBy(String groupBy){
 		this.conf.setGroupBy(groupBy);
-		updateListItems(this.itemList);
+		refresh();
 	}
 	
 	public void setSortBy(String sortBy, boolean revert){
 		this.conf.setSortBy(sortBy);
 		this.conf.setReverseSort(revert);
-		updateListItems(this.itemList);
-		this.repaint();
+		refresh();
 	}
 	
 	public void keyTyped(KeyEvent ke) {
@@ -405,13 +477,16 @@ public class EditorPanel extends AbstractList<EditorNode, EditorItem>{
 			getCloseAL(closeMod).actionPerformed(null);
 		} else if(ke.getKeyChar() == KeyEvent.VK_ENTER){
 			for (EditorItem item : getSelectedItem()) {
-				if(ke.isShiftDown()){
+				File file = null;
+				try {
+					file = item.getEditorNode().getFile();
+				} catch (URISyntaxException e1) {
+					this.spw.showErrorMessage(e1.getLocalizedMessage());
+				} 
+				if(ke.isShiftDown() && file != null){
 					try {
-						String path = item.getEditorNode().getFile().getAbsolutePath();  
-						Runtime.getRuntime().exec("explorer.exe /select," + path);
+						Runtime.getRuntime().exec("explorer.exe /select," + file.getAbsolutePath());
 					} catch (IOException e) {
-						this.spw.showErrorMessage(e.getLocalizedMessage());
-					} catch (URISyntaxException e) {
 						this.spw.showErrorMessage(e.getLocalizedMessage());
 					}
 				} else {
@@ -430,12 +505,36 @@ public class EditorPanel extends AbstractList<EditorNode, EditorItem>{
 
 	public void setShowClosedFiles(int showClosedFiles) {
 		this.conf.setShowClosedFiles(showClosedFiles);
-		updateListItems(this.itemList);
+		refresh();
 	}
 
 	public Config getConfig(){
 		return this.conf;
 	}
-	
+	public String getWorkingSetConfig(){
+		return this.workingSets.forConfig();
+	}
 
+	public void saveWorkingSet() {
+		saveWorkingSet(getSelectedItem());
+	}
+	public void saveWorkingSet(ArrayList<EditorItem> items) {
+		this.workingSets.addWorkingSet(items);
+	}
+	public ArrayList<WorkingSet> getWorkingSets(){
+		return this.workingSets.getWorkingSets();
+	}
+
+
+	public StandalonePluginWorkspace getSPW() {
+		return this.spw;
+	}
+
+
+	public void register(EditorItem ei) {
+		new DragListener(ei);
+	}
+	
+	
+	
 }

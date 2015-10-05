@@ -1,23 +1,16 @@
 package net.sqf.view.utils.borders;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
-
-import de.janosch.commons.swing.util.SwingUtil;
 
 public class ResizeableAbsolutePane {
 	private final JPanel panel = new JPanel();
@@ -53,11 +46,11 @@ public class ResizeableAbsolutePane {
 			
 			@Override
 			public void componentResized(ComponentEvent arg0) {
-				Dimension size = panelSize;
+//				Dimension size = panelSize;
 				panelSize = panel.getSize();
-				for (ResizeableMouseListener rml : allRmls) {
-//					rml.resize(size, panelSize);
-				}
+//				for (ResizeableMouseListener rml : allRmls) {
+////					rml.resize(size, panelSize);
+//				}
 			}
 			
 			@Override

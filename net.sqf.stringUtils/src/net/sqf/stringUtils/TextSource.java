@@ -12,8 +12,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.JarURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -24,9 +26,12 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.mozilla.universalchardet.UniversalDetector;
+import org.xml.sax.InputSource;
 
 
 public class TextSource {
@@ -91,9 +96,10 @@ public class TextSource {
 		}
 	}
 	
-	public void setData(String data){
+	public TextSource setData(String data){
 		this.data = data;
 		this.lineSeperator = detectLineSeperator(data);
+		return this;
 	}
 	private void setHasBOM(boolean hasBOM){
 		this.hasBOM = hasBOM;
@@ -200,6 +206,7 @@ public class TextSource {
 
 	    // (4)
 	}
+	@SuppressWarnings("unused")
 	private static String detectEncoding(File input) {
 		try {
 			return detectEncoding(new BufferedInputStream(new FileInputStream(input)));
@@ -254,15 +261,16 @@ public class TextSource {
 	}
 
 	public static TextSource readTextFile(File input) throws IOException {
-		InputStream is = new FileInputStream(input);
-		return readTextFile(is, detectEncodingUD(input), input);
+		String encoding =  detectEncodingUD(input);
+		TextSource ts = new TextSource(input, encoding);
+		Reader reader = resolveFile(input, encoding);
+		return readTextFile(reader, ts);
 	}
-
+	
 	public static TextSource readTextFile(File input, String encoding)
 			throws FileNotFoundException {
 		TextSource tr = new TextSource(input);
 		tr.setEncoding(encoding);
-		
 		StringBuilder text = new StringBuilder();
 		String NL = System.getProperty("line.separator");
 		Scanner scanner = new Scanner(new FileInputStream(input), encoding);
@@ -276,15 +284,45 @@ public class TextSource {
 		tr.setData(text.toString());
 		return tr;
 	}
+	
+	public static void implementResolver(URIResolver resolver){
+		TextSource.resolver = resolver; 
+	}
+	
+	public static void resetResolver(){
+		resolver = null;
+	}
 
+	private static URIResolver resolver = null;
+	
+	private static Reader resolveFile(File input, String encoding) throws IOException {
+		if(resolver != null){
+			Source src;
+			try {
+				src = resolver.resolve(input.toURI().toString(), new File(".").toURI().toString());
+				if(src instanceof StreamSource){
+					StreamSource ssrc = (StreamSource) src;
+					Reader reader = ssrc.getReader();
+					if(reader == null){
+						reader = new InputStreamReader(ssrc.getInputStream());
+					}
+					return reader;
+				} else if (src instanceof InputSource) {
+					InputSource isrc = (InputSource) src;
+					return isrc.getCharacterStream();
+				}
+			} catch (TransformerException e) {}
+		}
+		return new InputStreamReader(new FileInputStream(input), encoding);
+	}
+	
 	public static TextSource readTextFile(File input, String encoding,
 			boolean byLine) throws IOException {
 		if (byLine) {
 			return readTextFile(input, encoding);
 		} else {
 			TextSource tr = new TextSource(input, encoding);
-			InputStreamReader reader = new InputStreamReader(
-					new FileInputStream(input), encoding);
+			Reader reader = resolveFile(input, encoding);
 			return readTextFile(reader, tr);
 		}
 	}
@@ -356,8 +394,25 @@ public class TextSource {
 		} catch (TransformerException e) {
 			throw new IOException();
 		}
-		
-		TextSource resultSource = TextSource.createVirtualTextSource(new File(source.getSystemId()));
+		URI uri;
+		try {
+			uri = new URI(source.getSystemId());
+		} catch (URISyntaxException e) {
+			throw new IOException();
+		}
+		File file;
+		if(uri.getScheme().equals("jar")){
+			URL url = uri.toURL();
+			JarURLConnection connection = (JarURLConnection) url.openConnection();
+			try {
+				file = new File(connection.getJarFileURL().toURI());
+			} catch (URISyntaxException e) {
+				throw new IOException();
+			}
+		} else {
+			file = new File(uri);
+		}
+		TextSource resultSource = TextSource.createVirtualTextSource(file);
 		resultSource.setData(writer.toString());
 		
 		return resultSource;
@@ -366,6 +421,12 @@ public class TextSource {
 	@Override
 	public boolean equals(Object obj) {
 		return this.toString().equals(obj.toString());
+	}
+	public static boolean hasResolver() {
+		return resolver != null;
+	}
+	public static URIResolver getResolver() {
+		return resolver;
 	}
 
 }

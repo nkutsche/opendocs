@@ -36,10 +36,12 @@ public abstract class AbstractList<ModelNodeType extends _ListNode, ListItemType
 	private final JPanel content = new JPanel(gbl_content);
 	protected JPanel endPanel = new JPanel();
 	private final JPanel toolbarPanel = new JPanel();
+	private final JPanel bottombarPanel = new JPanel();
 	private final GridBagLayout gbl_toolbarPanel = new GridBagLayout();
+	private final GridBagLayout gbl_bottombarPanel = new GridBagLayout();
 	protected boolean isMultiSelectable = true;
 
-	protected ArrayList<ListItemType> itemList = new ArrayList<ListItemType>();
+	private ArrayList<ListItemType> itemList = new ArrayList<ListItemType>();
 
 	private int messageIndex = 0;
 
@@ -52,6 +54,7 @@ public abstract class AbstractList<ModelNodeType extends _ListNode, ListItemType
 		this.setLayout(gbl);
 
 		toolbarPanel.setLayout(gbl_toolbarPanel);
+		bottombarPanel.setLayout(gbl_bottombarPanel);
 
 		final JScrollPane scrollPane = new JScrollPane(this.content);
 		ScrollPaneLayout spl = new ScrollPaneLayout();
@@ -70,9 +73,11 @@ public abstract class AbstractList<ModelNodeType extends _ListNode, ListItemType
 
 		endPanel.setBackground(Color.WHITE);
 
-		SwingUtil.addComponent(this, gbl, toolbarPanel, 0, 0, 1, 1, 1.0, 0.0,
+		SwingUtil.addComponent(this, gbl, toolbarPanel, 	0, 0, 1, 1, 1.0, 0.0,
 				GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH);
-		SwingUtil.addComponent(this, gbl, scrollPane, 0, 1, 1, 1, 0.0, 1.0,
+		SwingUtil.addComponent(this, gbl, scrollPane, 		0, 1, 1, 1, 0.0, 1.0,
+				GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH);
+		SwingUtil.addComponent(this, gbl, bottombarPanel, 	0, 2, 1, 1, 1.0, 0.0,
 				GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH);
 		border = BorderFactory.createEmptyBorder();
 		this.setBorder(border);
@@ -98,6 +103,13 @@ public abstract class AbstractList<ModelNodeType extends _ListNode, ListItemType
 			int width, int height, double weightx, double weighty, int anchor,
 			int fill) {
 		SwingUtil.addComponent(this.toolbarPanel, gbl_toolbarPanel, comp, x, y,
+				width, height, weightx, weighty, anchor, fill);
+	}
+	
+	protected void addComponentToBottombar(JComponent comp, int x, int y,
+			int width, int height, double weightx, double weighty, int anchor,
+			int fill) {
+		SwingUtil.addComponent(this.bottombarPanel, gbl_bottombarPanel, comp, x, y,
 				width, height, weightx, weighty, anchor, fill);
 	}
 
@@ -135,6 +147,10 @@ public abstract class AbstractList<ModelNodeType extends _ListNode, ListItemType
 		for (ListItemType item : items) {
 			addListItem(item);
 		}
+	}
+	
+	protected ArrayList<ListItemType> getListItems(){
+		return new ArrayList<ListItemType>(this.itemList);
 	}
 	
 	public ItemGroup<ModelNodeType, ListItemType> createItemGroup(ArrayList<ListItemType> items, ArrayList<ItemGroup<ModelNodeType, ListItemType>> subGroups, _ListGroupNode node){
@@ -176,10 +192,12 @@ public abstract class AbstractList<ModelNodeType extends _ListNode, ListItemType
 		this.addListItem(group);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void showItem(AbstractListItem item) {
 		item.setVisible(true);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void hideItem(AbstractListItem item) {
 		item.setVisible(false);
 	}

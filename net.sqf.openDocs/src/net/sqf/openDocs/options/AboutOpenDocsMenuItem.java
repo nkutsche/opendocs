@@ -12,7 +12,7 @@ public class AboutOpenDocsMenuItem extends JMenuItem {
 	private AboutOpenDocs aop;
 	
 	public AboutOpenDocsMenuItem(JFrame parentFrame){
-		super("About DocViewer");
+		super("About OpenDocs");
 		aop = new AboutOpenDocs(parentFrame);
 		this.addActionListener(new ActionListener() {
 			@Override

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="xerces/" kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/net.sqf.stringUtils"/>
+	<classpathentry kind="lib" path="lib/xml-apis.jar"/>
+	<classpathentry kind="lib" path="lib/woodstox-core-lgpl-4.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/saxon9he.jar"/>
+	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="src" path="/net.sqf.utils.process"/>
+	<classpathentry kind="lib" path="D:/nico/Work/Java/net.sqf.xmlUtils/lib/stax2-api-3.1.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

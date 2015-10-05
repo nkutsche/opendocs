@@ -1,20 +1,15 @@
 package net.sqf.view.utils.borders;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
 
 import de.janosch.commons.swing.util.SwingUtil;
 
@@ -25,6 +20,7 @@ public class ResizeablePane {
 	HashMap<Integer, ArrayList<ResizeableMouseListener>> compByXEnd = new HashMap<Integer, ArrayList<ResizeableMouseListener>>();
 	HashMap<Integer, ArrayList<ResizeableMouseListener>> compByYStart = new HashMap<Integer, ArrayList<ResizeableMouseListener>>();
 	HashMap<Integer, ArrayList<ResizeableMouseListener>> compByYEnd = new HashMap<Integer, ArrayList<ResizeableMouseListener>>();
+	@SuppressWarnings("unused")
 	private Dimension panelSize;
 	private final ArrayList<ResizeableMouseListener> allRmls = new ArrayList<ResizeableMouseListener>();
 	
@@ -43,7 +39,7 @@ public class ResizeablePane {
 			
 			@Override
 			public void componentResized(ComponentEvent arg0) {
-				Dimension size = panelSize;
+//				Dimension size = panelSize;
 				panelSize = panel.getSize();
 				for (ResizeableMouseListener rml : allRmls) {
 					rml.didResized();

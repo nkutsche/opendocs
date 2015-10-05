@@ -44,11 +44,15 @@ public class GroupByButton extends AbstractMenuButton {
 		JMenuItem noGroup = new GroupItem(	"No Grouping", 	EditorPanel.GROUPING_NONE);
 		JMenuItem ext = new GroupItem(		"Extension", 	EditorPanel.GROUPING_EXT);
 		JMenuItem folder = new GroupItem(	"Folder", 		EditorPanel.GROUPING_FOLDER);
+		JMenuItem working = new GroupItem(	"Working set", 		EditorPanel.GROUPING_WORKING_SET);
 //		JMenuItem folderTree = new GroupItem(	"Folder-Tree", 		EditorPanel.GROUPING_FOLDER_TREE);
 		
 		this.addMenuItem(noGroup);
 		this.addMenuItem(ext);
 		this.addMenuItem(folder);
+		this.addMenuItem(working);
+		
+		this.setToolTipText("Grouping");
 //		this.addMenuItem(folderTree);
 		
 	}

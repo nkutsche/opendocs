@@ -10,24 +10,24 @@ import java.awt.dnd.DragSourceDragEvent;
 import java.awt.dnd.DragSourceDropEvent;
 import java.awt.dnd.DragSourceEvent;
 import java.awt.dnd.DragSourceListener;
-import java.awt.dnd.DropTarget;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public abstract class FileDragSource implements DragGestureListener,
 		DragSourceListener {
 	
-	public FileDragSource(JPanel panel) {
+	public FileDragSource(JPanel panel){
 		DragSource dragSource = DragSource.getDefaultDragSource();
 		 dragSource.createDefaultDragGestureRecognizer(panel, DnDConstants.ACTION_COPY, this);
 	}
 	
+	
 	public abstract File[] getDragedFileList();
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	class FileListTransferable implements Transferable {
 		public FileListTransferable(File[] files) {
 			fileList = new ArrayList();
@@ -67,26 +67,23 @@ public abstract class FileDragSource implements DragGestureListener,
 
 	@Override
 	public void dragDropEnd(DragSourceDropEvent arg0) {
-
 	}
 
 	@Override
 	public void dragEnter(DragSourceDragEvent arg0) {
-
 	}
 
 	@Override
 	public void dragExit(DragSourceEvent arg0) {
-
 	}
 
 	@Override
 	public void dragOver(DragSourceDragEvent arg0) {
-
 	}
-
+	
 	@Override
 	public void dropActionChanged(DragSourceDragEvent arg0) {
-
+		// TODO Auto-generated method stub
+		
 	}
 }

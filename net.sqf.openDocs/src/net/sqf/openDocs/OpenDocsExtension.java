@@ -4,12 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.swing.JMenuBar;
-
 import net.sqf.openDocs.customizer.DocViewer;
 import net.sqf.view.utils.images.IconMap;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
-import ro.sync.exml.workspace.api.standalone.MenuBarCustomizer;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 public class OpenDocsExtension implements WorkspaceAccessPluginExtension {

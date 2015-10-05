@@ -12,7 +12,6 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -29,6 +28,7 @@ public abstract class FileDropTarget implements DragGestureListener,
 //	public abstract File[] getDragedFileList();
 
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void drop(DropTargetDropEvent dte) {
 		dte.acceptDrop(DnDConstants.ACTION_COPY);

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project net.sqf.xmlUtils">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="D:/nico/Work/Java/net.sqf.xmlUtils/jar/xerces.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="net.sqf.xmlUtils.xsd.Xerces"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="D:/nico/Work/Java/net.sqf.xmlUtils/bin"/>
+            <fileset dir="D:/nico/Work/Java/net.sqf.stringUtils/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="D:/nico/Work/Java/net.sqf.stringUtils/lib/juniversalchardet-1.0.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="D:/nico/Work/Java/net.sqf.xmlUtils/lib/xml-apis.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="D:/nico/Work/Java/net.sqf.xmlUtils/lib/woodstox-core-lgpl-4.2.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="D:/nico/Work/Java/net.sqf.xmlUtils/lib/xercesImpl.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="D:/nico/Work/Java/net.sqf.xmlUtils/lib/saxon9he.jar"/>
+            <fileset dir="D:/nico/Work/Java/net.sqf.utils.process/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="D:/nico/Work/Java/net.sqf.xmlUtils/lib/stax2-api-3.1.1.jar"/>
+        </jar>
+    </target>
+</project>

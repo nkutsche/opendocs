@@ -5,10 +5,7 @@ import java.util.HashMap;
 
 import javax.swing.JFormattedTextField;
 
-import net.sqf.view.utils.images.IconMap;
-
 public class VerifierFactory {
-	public static IconMap ICONS;
 	private static final String DEFAULT_TYPE = "xs:string";
 	
 	public static void addVerifier(String type, JFormattedTextField field, Container owner) {

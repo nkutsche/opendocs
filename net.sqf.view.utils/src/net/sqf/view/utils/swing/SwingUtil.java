@@ -3,8 +3,6 @@ package net.sqf.view.utils.swing;
 import java.awt.Point;
 import java.awt.Window;
 
-import javax.swing.JFrame;
-
 
 public class SwingUtil {
 	public static void centerFrame(final Window  frame, Window owner){

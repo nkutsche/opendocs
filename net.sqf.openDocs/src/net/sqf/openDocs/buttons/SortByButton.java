@@ -9,7 +9,6 @@ import javax.swing.JMenuItem;
 
 import net.sqf.openDocs.OpenDocsExtension;
 import net.sqf.openDocs.customizer.EditorPanel;
-import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 public class SortByButton extends AbstractDropDownButton {
 
@@ -58,7 +57,7 @@ public class SortByButton extends AbstractDropDownButton {
 	public SortByButton(EditorPanel editorPanel) {
 		super(editorPanel);
 		
-		
+		setToolTipText("Sorting");
 		this.revert = editorPanel.getConfig().isReverseSort();
 		updateIcon();
 		

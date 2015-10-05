@@ -1,10 +1,8 @@
 package net.sqf.openDocs.buttons;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import javax.swing.Icon;
@@ -95,11 +93,7 @@ public class SelectButton extends AbstractDropDownButton {
 				break;
 				
 			case SELECT_MODE_NEW:
-				try {
-					select = !editorItem.getEditorNode().getFile().exists();
-				} catch (URISyntaxException e) {
-					select = true;
-				}
+				select = !editorItem.getEditorNode().exists();
 				break;
 			default:
 				select = true;

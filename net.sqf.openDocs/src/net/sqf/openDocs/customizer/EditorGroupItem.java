@@ -2,19 +2,16 @@ package net.sqf.openDocs.customizer;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 
 import javax.swing.Icon;
-
-import de.janosch.commons.collections.tree.FileNode;
-import de.janosch.commons.collections.tree.Tree;
 
 import net.sqf.openDocs.OpenDocsExtension;
 import net.sqf.openDocs.listNodes.EditorNode;
 import net.sqf.openDocs.listNodes.GroupNode;
 import net.sqf.view.utils.lists.items.ItemGroup;
+import de.janosch.commons.collections.tree.FileNode;
+import de.janosch.commons.collections.tree.Tree;
 
 public class EditorGroupItem extends ItemGroup<EditorNode, EditorItem> implements Comparable<EditorGroupItem>  {
 

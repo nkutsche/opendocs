@@ -49,6 +49,7 @@ public class OptionButton extends AbstractMenuButton {
 		showClosed.add(new ShowClosedOption("Show the last 50 closed files", 50));
 		addMenuItem(showClosed);
 		addMenuItem(new AboutOpenDocsMenuItem(parentFrame));
+		this.setToolTipText("Options");
 //		this.add(new JLabel(DocViewerExtension.ICONS.getIcon(11, 18)));
 	}
 

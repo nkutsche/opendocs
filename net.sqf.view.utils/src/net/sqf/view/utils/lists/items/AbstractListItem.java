@@ -38,8 +38,12 @@ public abstract class AbstractListItem<ModelNodeType extends _ListNode> extends 
 	
 	private GridBagLayout gbl = new GridBagLayout();
 
-	private Color defaultColor = DEFAULT_COLOR;
+	private Color usedBgColor = DEFAULT_COLOR;
+	private Color usedFontColor = DEFAULT_FONT_COLOR;
+	
 	private Color defaultFontColor = DEFAULT_FONT_COLOR;
+	private Color selectFontColor = SELECTION_FONT_COLOR;
+	
 	private JLabel titleLabel;
 	private boolean isSelected;
 	protected final ModelNodeType node;
@@ -49,6 +53,7 @@ public abstract class AbstractListItem<ModelNodeType extends _ListNode> extends 
 	private int paddingLabel;
 //	private JPopupMenu menu = null;
 	private HashMap<Integer, JPopupMenu> menuByModifier = new HashMap<Integer, JPopupMenu>();
+	private Color howerFontColor = HOVER_FONT_COLOR;
 	
 	
 	public AbstractListItem(ModelNodeType node, Icon defaultIcon){
@@ -156,7 +161,7 @@ public abstract class AbstractListItem<ModelNodeType extends _ListNode> extends 
 				setBorder(HOVER_SELECT_BORDER);
 			} else {
 				setBackground(HOVER_COLOR);
-				titleLabel.setForeground(HOVER_FONT_COLOR);
+				titleLabel.setForeground(howerFontColor);
 			}
 			updateUI();
 			super.mouseEntered(e);
@@ -195,8 +200,8 @@ public abstract class AbstractListItem<ModelNodeType extends _ListNode> extends 
 		@Override
 		public void mouseExited(MouseEvent e) {
 			setBorder(DEFAULT_BORDER);
-			setBackground(defaultColor);
-			titleLabel.setForeground(defaultFontColor);
+			setBackground(usedBgColor);
+			titleLabel.setForeground(usedFontColor);
 			updateUI();
 			super.mouseExited(e);
 		}
@@ -210,14 +215,14 @@ public abstract class AbstractListItem<ModelNodeType extends _ListNode> extends 
 		this.isSelected = isSelected;
 		if(isSelected){
 			this.setBackground(SELECTION_COLOR);
-			titleLabel.setForeground(SELECTION_FONT_COLOR);
-			this.defaultColor = SELECTION_COLOR;
-			this.defaultFontColor = SELECTION_FONT_COLOR;
+			titleLabel.setForeground(this.selectFontColor);
+			this.usedBgColor = SELECTION_COLOR;
+			this.usedFontColor = this.selectFontColor;
 		} else {
 			this.setBackground(DEFAULT_COLOR);
-			titleLabel.setForeground(DEFAULT_FONT_COLOR);
-			this.defaultColor = DEFAULT_COLOR;
-			this.defaultFontColor = DEFAULT_FONT_COLOR;
+			titleLabel.setForeground(this.defaultFontColor);
+			this.usedBgColor = DEFAULT_COLOR;
+			this.usedFontColor = this.defaultFontColor;
 		}
 		repaint();
 	}
@@ -232,6 +237,13 @@ public abstract class AbstractListItem<ModelNodeType extends _ListNode> extends 
 		f = new Font(f.getName(), style, f.getSize());
 		titleLabel.setFont(f);
 		titleLabel.repaint();
+	}
+	protected void setLabelStyle(Color fg){
+		titleLabel.setForeground(fg);
+		this.usedFontColor = fg;
+		this.defaultFontColor = fg;
+		this.selectFontColor = fg;
+		this.howerFontColor = fg;
 	}
 	
 	public boolean isSelected(){

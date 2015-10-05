@@ -3,7 +3,6 @@ package net.sqf.view.utils.borders;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.LayoutManager;
 import java.awt.LayoutManager2;
 
 public class ResaizeableLayout implements LayoutManager2 {

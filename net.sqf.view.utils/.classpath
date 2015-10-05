@@ -3,10 +3,10 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="bindata"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/de.janosch.commons"/>
 	<classpathentry kind="lib" path="lib/joda-time-2.2.jar"/>
 	<classpathentry kind="src" path="/net.sqf.xmlUtils"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/net.sqf.stringUtils"/>
 	<classpathentry kind="src" path="/net.sqf.utils.process"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.nkutsche.common"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

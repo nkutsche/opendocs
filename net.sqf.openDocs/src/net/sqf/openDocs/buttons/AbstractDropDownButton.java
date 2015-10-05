@@ -1,13 +1,8 @@
 package net.sqf.openDocs.buttons;
 
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Event;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -15,28 +10,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
-
-import com.jidesoft.plaf.basic.ThemePainter;
-
-import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
+import javax.swing.SwingUtilities;
 
 import net.sqf.openDocs.OpenDocsExtension;
-import net.sqf.openDocs.OpenDocsPlugin;
 import net.sqf.openDocs.customizer.EditorPanel;
+import net.sqf.view.utils.images.IconMap;
+
+import org.apache.batik.ext.swing.GridBagConstants;
+
+import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 import de.janosch.commons.swing.util.SwingUtil;
 
 public abstract class AbstractDropDownButton extends JPanel implements MouseMotionListener {
@@ -56,8 +46,14 @@ public abstract class AbstractDropDownButton extends JPanel implements MouseMoti
 	private int mouseX = -1;
 
 	private int mouseY = -1;
+
+	private MenuItemSupplier itemSupplier;
 	
 	private abstract class Button extends ToolbarButton implements MouseListener{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -2423536804100988378L;
 		private final GridBagLayout btnGbl = new GridBagLayout();
 		private final JLabel btnLabel = new JLabel();
 		private JSeparator separator = new JSeparator(JSeparator.VERTICAL);
@@ -70,7 +66,7 @@ public abstract class AbstractDropDownButton extends JPanel implements MouseMoti
 			File arrowIcon = new File("icons/arrow.gif");
 			menuLabel = new JLabel();
 			try {
-				menuLabel.setIcon(OpenDocsExtension.ICONS.getIcon(arrowIcon));
+				menuLabel.setIcon(IconMap.getIcon(arrowIcon));
 			} catch (IOException e) {
 				menuLabel.setIcon(OpenDocsExtension.ICONS.getIcon(12, 22));
 			}
@@ -103,6 +99,13 @@ public abstract class AbstractDropDownButton extends JPanel implements MouseMoti
 			}
 		}
 		
+		@Override
+		public void setText(String text) {
+			if(btnLabel != null){
+				btnLabel.setText(text);
+			}
+		}
+		
 		public abstract void action(MouseEvent e);
 		
 		public abstract void popupMenu(MouseEvent e);
@@ -110,7 +113,10 @@ public abstract class AbstractDropDownButton extends JPanel implements MouseMoti
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			Component comp = e.getComponent().getComponentAt(mouseX, mouseY);
-			if(comp == this.btnLabel){
+			
+			if(e.isPopupTrigger() || SwingUtilities.isRightMouseButton(e)){
+				button.popupMenu(e);
+			} else if(comp == this.btnLabel){
 				button.action(e);
 			} else if (comp == this.menuLabel){
 				button.popupMenu(e);
@@ -136,28 +142,41 @@ public abstract class AbstractDropDownButton extends JPanel implements MouseMoti
 		}
 		
 		@Override
-		public void mousePressed(MouseEvent e) {}
+		public void mousePressed(MouseEvent e) {
+		}
 		
 		@Override
 		public void mouseReleased(MouseEvent e) {}
 		
 	}
 
-	
 	public AbstractDropDownButton(EditorPanel ePanel) {
+		this(ePanel, GridBagConstants.SOUTH);
+	}
+	public AbstractDropDownButton(EditorPanel ePanel, final int orientation) {
 		this.setLayout(gbl);
 		this.editorPanel = ePanel;
 		this.menuBar  = new JPopupMenu();
 		this.button = new Button() {
+			private static final long serialVersionUID = 9177109530368473042L;
 			@Override
 			public void action(MouseEvent e) {
 				AbstractDropDownButton.this.action(e);
 			}
 			@Override
 			public void popupMenu(MouseEvent e) {
+				updateItems();
 				int x = this.getX();
 				int y = this.getY() + this.getHeight();
-				updateItems();
+				switch (orientation) {
+				case GridBagConstants.NORTH:
+					x = this.getX();
+					y = this.getY() - menuBar.getPreferredSize().height;
+					break;
+
+				default:
+					break;
+				}
 				menuBar.show(AbstractDropDownButton.this, x, y);
 			}
 		};
@@ -169,10 +188,35 @@ public abstract class AbstractDropDownButton extends JPanel implements MouseMoti
 		SwingUtil.addComponent(this, gbl, button, 0, 0, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
 	}
 	
+	
+	
 	private void updateItems(){
+		if(itemSupplier != null){
+			this.menuBar.removeAll();
+			this.items.removeAll(items);
+			for (JComponent item : itemSupplier.getMenuItems()) {
+				if (item instanceof JSeparator) {
+					this.menuBar.addSeparator();
+				} else if (item instanceof JMenuItem) {
+					JMenuItem mitem = (JMenuItem) item;
+					this.addMenuItem(mitem);
+				} else {
+					this.menuBar.add(item);
+				}
+			}
+		}
 		for (JMenuItem item : items) {
 			item.setEnabled(item.isEnabled());
 		}
+	}
+	
+	@Override
+	public void setToolTipText(String text) {
+		this.button.setToolTipText(text);
+	}
+	
+	protected void setItemSupplier(MenuItemSupplier mis){
+		this.itemSupplier = mis;
 	}
 	
 	protected void addMenuItem(JMenuItem item){
@@ -180,8 +224,12 @@ public abstract class AbstractDropDownButton extends JPanel implements MouseMoti
 		this.menuBar.add(item);
 	}
 	
-	protected void setIcon(ImageIcon icon) {
+	protected void setIcon(Icon icon) {
 		button.setIcon(icon);
+	}
+	
+	protected void setTitle(String title) {
+		button.setText(title);
 	}
 	
 	protected void setSelectedItem(JMenuItem item){

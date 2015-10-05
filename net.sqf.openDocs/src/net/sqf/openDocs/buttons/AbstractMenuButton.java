@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -61,6 +60,12 @@ public abstract class AbstractMenuButton extends JPanel {
 		
 		
 		SwingUtil.addComponent(this, gbl, button, 0, 0, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.NONE);
+	}
+	
+	@Override
+	public void setToolTipText(String text) {
+		this.button.setToolTipText(text);
+		super.setToolTipText(text);
 	}
 	
 	private void updateItems(){

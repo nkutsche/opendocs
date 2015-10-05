@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="net.sqf.openDocs${version}" name="OpenDocs for oXygen (v${version})" description="Implementation of OpenDocs"
+	version="${version}" vendor="nkutsche.com" class="net.sqf.openDocs.OpenDocsPlugin"
+	classLoaderType="preferReferencedResources">
+	<runtime>
+	    <librariesFolder name="lib"/>
+	</runtime>
+	<extension type="WorkspaceAccess" class="net.sqf.openDocs.OpenDocsExtension"/>
+	<view id="OpenDocs" initialSide="EAST" initialRow="1"/>
+</plugin>
